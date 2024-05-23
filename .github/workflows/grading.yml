@@ -1,0 +1,35 @@
+name: Grading
+
+# Sự kiện kích hoạt workflow
+on: [push, pull_request]
+
+jobs:
+  # Định nghĩa công việc kiểm tra và đánh giá
+  test:
+    # Chạy trên môi trường Windows mới nhất
+    runs-on: windows-latest
+
+    # Các bước thực hiện trong công việc này
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run tests
+      run: |
+        pytest --junitxml=results.xml
+
+    - name: Archive test results
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results
+        path: results.xml
